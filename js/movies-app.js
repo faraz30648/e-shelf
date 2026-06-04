@@ -158,6 +158,33 @@ document.addEventListener('keydown', (e) => {
     if(e.key === 'Escape') { UI.searchModal.classList.add('hidden'); UI.itemModal.classList.add('hidden'); }
 });
 
+document.getElementById('main-add-btn').addEventListener('click', () => {
+    UI.searchModal.classList.remove('hidden'); UI.searchInput.focus();
+    showToast("Use search to find and add an item!");
+});
+
+const resetBtn = document.getElementById('reset-data-btn');
+const resetWarning = document.getElementById('reset-warning');
+
+resetBtn.addEventListener('click', () => {
+    if (resetWarning.classList.contains('hidden')) {
+        // First click: show the warning and change button text
+        resetWarning.classList.remove('hidden');
+        resetBtn.innerText = "CONFIRM: Permanently Delete ALL Data";
+        showToast("Click again to confirm, this cannot be undone.");
+    } else {
+        // Second click: The warning section has complex logic, 
+        // deferring this logic implementation to Phase 3.
+        showToast("Reset feature logic is not implemented yet. Phase 3 task.");
+    }
+});
+
+document.getElementById('upload-data-btn').addEventListener('click', () => {
+    // Tooltip upload complex logic is a big task, 
+    // deferring this logic implementation to Phase 3.
+    showToast("CSV Upload feature logic not implemented. Phase 3 task.");
+});
+
 let debounceTimer;
 UI.searchInput.addEventListener('input', (e) => {
     clearTimeout(debounceTimer);
