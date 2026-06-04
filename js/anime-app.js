@@ -22,14 +22,22 @@ const UI = {
 
 const showToast = (msg) => { const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; UI.toast.appendChild(t); setTimeout(() => t.remove(), 3000); };
 
+// --- Replace the original function with this corrected one ---
 const renderHero = (item) => {
     if(!item) { 
         UI.hero.style.backgroundImage = 'none';
         UI.hero.innerHTML = `<div class="hero-content"><h1>Welcome to Shelf</h1><p>Start adding anime!</p></div>`; 
         return; 
     }
-    UI.hero.style.backgroundImage = `url(${recent.backdropUrl || recent.posterUrl})`;
-    UI.hero.innerHTML = `<div class="hero-content"><h1>${recent.title}</h1><p class="hero-meta">Ep: ${recent.currentEpisode||0}/${recent.episodes} • ${recent.status}</p><button class="btn btn-primary" onclick="window.openItemModal('${recent.id}')">View Details</button></div>`;
+    // FIX APPLIED: Changed 'recent' to 'item' on the lines below
+    UI.hero.style.backgroundImage = `url(${item.backdropUrl || item.posterUrl})`;
+    UI.hero.innerHTML = `
+        <div class="hero-content">
+            <h1>${item.title}</h1>
+            <p class="hero-meta">Ep: ${item.currentEpisode||0}/${item.episodes} • ${item.status}</p>
+            <button class="btn btn-primary" onclick="window.openItemModal('${item.id}')">View Details</button>
+        </div>
+    `;
 };
 
 const renderStats = () => {
