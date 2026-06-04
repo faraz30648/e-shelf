@@ -1,0 +1,5 @@
+:root {
+    --accent: #f5a623; /* Gold/Amber */
+}
+.card { aspect-ratio: 1 / 1.5; }
+.hero-content h1 { text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
