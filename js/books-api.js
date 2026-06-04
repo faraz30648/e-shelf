@@ -1,4 +1,4 @@
-const GOOGLE_BOOKS_API_KEY = 'YOUR_GOOGLE_BOOKS_API_KEY';
+const GOOGLE_BOOKS_API_KEY = 'AIzaSyCrtuu2cMzlnZAENBuFnN2mRXDcRhY2RYM';
 const BASE_URL = 'https://www.googleapis.com/books/v1/volumes';
 
 export const searchBooks = async (query) => {
