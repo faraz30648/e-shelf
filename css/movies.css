@@ -1,0 +1,7 @@
+:root {
+    --accent: #e50914; /* Netflix Red */
+}
+.card { aspect-ratio: 2 / 3; }
+.hero-content h1 { text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+.badges span { display: inline-block; padding: 0.2rem 0.5rem; font-size: 0.8rem; background: var(--bg-secondary); border-radius: 4px; margin-right: 0.5rem; margin-bottom: 0.5rem; border: 1px solid var(--border-color);}
+.badges span.sub { border-color: var(--accent); }
