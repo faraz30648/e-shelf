@@ -1,4 +1,4 @@
-const RAPIDAPI_KEY = 'YOUR_RAPIDAPI_KEY';
+const RAPIDAPI_KEY = '5604c0a89bmsh76ace676bc7aa92p113307jsnc0f85ae1b32e';
 const HOST = 'streaming-availability.p.rapidapi.com';
 
 export const getStreamingInfo = async (tmdbId, type) => {
