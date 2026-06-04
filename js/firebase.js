@@ -1,10 +1,10 @@
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDP6aEk0kgGD1AHvrik6wgNDe0d3bnl01I",
+    authDomain: "e-shelf-8ecd7.firebaseapp.com",
+    projectId: "e-shelf-8ecd7",
+    storageBucket: "e-shelf-8ecd7.firebasestorage.app",
+    messagingSenderId: "265591028174",
+    appId: "1:265591028174:web:c56eacc042346f4c84939f"
 };
 
 // Initialize only if not already initialized
