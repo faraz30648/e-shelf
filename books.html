@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Books | Entertainment Shelf</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/books.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="theme-dark app-body">
+    <nav class="top-nav glass-panel">
+        <div class="nav-left">
+            <span class="brand-logo">E-SHELF</span>
+            <div class="nav-links">
+                <a href="movies.html">Movies</a>
+                <a href="books.html" class="active">Books</a>
+                <a href="anime.html">Anime</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <button id="search-trigger" class="icon-btn">🔍</button>
+            <button id="theme-toggle" class="icon-btn">🌗</button>
+            <div class="user-menu">
+                <img id="user-avatar" src="" alt="User">
+                <button id="logout-btn" class="btn btn-sm">Sign Out</button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <header id="hero-section" class="hero"></header>
+        
+        <div class="controls-bar">
+            <div class="mood-filters" id="mood-filters">
+                <span class="chip active" data-mood="all">All</span>
+                <span class="chip" data-mood="Fiction">Fiction</span>
+                <span class="chip" data-mood="Non-Fiction">Non-Fiction</span>
+                <span class="chip" data-mood="Fantasy">Deep Dive</span>
+                <span class="chip" data-mood="Self-Help">Self-Growth</span>
+            </div>
+            <div class="sort-controls">
+                <input type="text" id="shelf-search" placeholder="Filter shelf...">
+                <select id="shelf-sort">
+                    <option value="dateAdded">Date Added</option>
+                    <option value="title">Title A-Z</option>
+                </select>
+            </div>
+        </div>
+
+        <section id="stats-panel" class="stats-panel glass-panel"></section>
+
+        <div id="carousels-container" class="carousels"></div>
+    </main>
+
+    <div id="search-modal" class="modal-backdrop hidden">
+        <div class="modal search-modal glass-panel">
+            <input type="text" id="global-search-input" placeholder="Search books by title, author...">
+            <div id="search-results" class="results-grid"></div>
+        </div>
+    </div>
+
+    <div id="item-modal" class="modal-backdrop hidden">
+        <div class="modal item-modal glass-panel">
+            <div class="modal-header">
+                <h2 id="modal-title"></h2>
+                <button class="close-modal icon-btn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-poster"><img id="modal-img" src="" alt=""></div>
+                <div class="modal-info">
+                    <p id="modal-meta" class="meta"></p>
+                    <p id="modal-overview"></p>
+                    
+                    <form id="item-form" class="edit-form">
+                        <label>Status:
+                            <select id="item-status" required>
+                                <option value="Reading">Reading</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Plan to Read">Plan to Read</option>
+                                <option value="Dropped">Dropped</option>
+                                <option value="On Hold">On Hold</option>
+                            </select>
+                        </label>
+                        <label>Current Page: <input type="number" id="item-progress" min="0"></label>
+                        <label>Rating (1-10): <input type="number" id="item-rating" min="1" max="10"></label>
+                        <label>Notes: <textarea id="item-notes"></textarea></label>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save to Shelf</button>
+                            <button type="button" id="remove-item-btn" class="btn btn-danger hidden">Remove</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script type="module" src="js/books-app.js"></script>
+</body>
+</html>
