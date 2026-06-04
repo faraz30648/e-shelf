@@ -19,14 +19,41 @@ const UI = {
 
 const showToast = (msg) => { const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; UI.toast.appendChild(t); setTimeout(() => t.remove(), 3000); };
 
+// --- Updated renderHero Section to Fix Blank Hero (Fix A / Req 6) ---
+const renderHero = (item) => {
+    if(!item) { 
+        UI.hero.style.backgroundImage = 'none';
+        UI.hero.innerHTML = `<div class="hero-content"><h1>Welcome to Shelf</h1><p>Start adding books!</p></div>`; 
+        return; 
+    }
+    
+    // Add graceful fallback logic for image. 
+    // Books don't have backdrops, so the thumbnail sometimes isn't enough.
+    // If we have no image at all, use an empty state.
+    const heroImage = item.posterUrl ? `url(${item.posterUrl})` : 'none';
+    UI.hero.style.backgroundImage = heroImage;
+    
+    // Safety check to ensure authors is defined and handle the array
+    const authorStr = item.author && item.author.length > 0 ? (Array.isArray(item.author) ? item.author.join(', ') : item.author) : 'Unknown Author';
+
+    UI.hero.innerHTML = `
+        <div class="hero-content">
+            <h1>${item.title}</h1>
+            <p class="hero-meta">${authorStr} • ${item.year || 'N/A'} • ${item.status}</p>
+            <button class="btn btn-primary" onclick="window.openItemModal('${item.id}')">View Details</button>
+        </div>
+    `;
+};
+
 const renderStats = () => {
     const total = shelfData.length;
     const completed = shelfData.filter(i => i.status === 'Completed').length;
-    const pages = shelfData.filter(i => i.status === 'Completed').reduce((acc, i) => acc + (Number(i.pages)||0), 0);
+    // Handle edge case where pages is not a number
+    const pages = shelfData.filter(i => i.status === 'Completed').reduce((acc, i) => acc + (parseInt(i.pages, 10) || 0), 0);
     UI.statsPanel.innerHTML = `
         <div class="stat-box"><div class="num">${total}</div><div class="label">Total Books</div></div>
         <div class="stat-box"><div class="num">${completed}</div><div class="label">Read</div></div>
-        <div class="stat-box"><div class="num">${pages}</div><div class="label">Pages Read</div></div>
+        <div class="stat-box"><div class="num">${pages.toLocaleString()}</div><div class="label">Pages Read</div></div>
     `;
 };
 
@@ -41,7 +68,7 @@ const renderCarousels = () => {
         row.innerHTML = `<h3>${status} <span class="count">${items.length}</span></h3><div class="carousel-track">
             ${items.map(item => `
                 <div class="card" onclick="window.openItemModal('${item.id}')">
-                    <img src="${item.posterUrl}" alt="${item.title}" loading="lazy">
+                    <img src="${item.posterUrl || 'https://via.placeholder.com/150x225?text=No+Cover'}" alt="${item.title}" loading="lazy">
                     <div class="card-overlay"><h4>${item.title}</h4><span>★ ${item.userRating||'-'}</span></div>
                 </div>
             `).join('')}
@@ -52,19 +79,20 @@ const renderCarousels = () => {
 
 const loadShelf = async () => {
     shelfData = await getShelf(currentUser.uid, 'books');
-    const recent = shelfData[shelfData.length-1];
-    if(recent) {
-        UI.hero.innerHTML = `<div class="hero-content"><h1>${recent.title}</h1><p class="hero-meta">${recent.author} • ${recent.status}</p><button class="btn btn-primary" onclick="window.openItemModal('${recent.id}')">View Details</button></div>`;
-    }
+    renderHero(shelfData[shelfData.length-1]); // Most recent
     renderStats(); renderCarousels();
 };
 
 window.openItemModal = (id) => {
     currentSelectedItem = shelfData.find(i => i.id === id);
     document.getElementById('modal-title').innerText = currentSelectedItem.title;
-    document.getElementById('modal-img').src = currentSelectedItem.posterUrl;
-    document.getElementById('modal-meta').innerText = `${currentSelectedItem.author} • ${currentSelectedItem.year} • ${currentSelectedItem.pages} pages`;
-    document.getElementById('modal-overview').innerText = currentSelectedItem.overview;
+    document.getElementById('modal-img').src = currentSelectedItem.posterUrl || 'https://via.placeholder.com/150x225?text=No+Cover';
+    
+    // Author variable check for joined array
+    const authorStr = currentSelectedItem.author && currentSelectedItem.author.length > 0 ? (Array.isArray(currentSelectedItem.author) ? currentSelectedItem.author.join(', ') : currentSelectedItem.author) : 'Unknown Author';
+    
+    document.getElementById('modal-meta').innerText = `${authorStr} • ${currentSelectedItem.year || 'N/A'} • ${currentSelectedItem.pages || 'N/A'} pages`;
+    document.getElementById('modal-overview').innerText = currentSelectedItem.overview || 'No description available.';
     document.getElementById('item-status').value = currentSelectedItem.status;
     document.getElementById('item-progress').value = currentSelectedItem.currentPage || 0;
     document.getElementById('item-rating').value = currentSelectedItem.userRating || '';
@@ -78,9 +106,9 @@ window.openAddModal = (index) => {
     const item = currentSearchResults[index];
     currentSelectedItem = { id: item.apiId, ...item, status: 'Plan to Read', userRating: '', notes: '', currentPage: 0 };
     document.getElementById('modal-title').innerText = item.title;
-    document.getElementById('modal-img').src = item.posterUrl;
-    document.getElementById('modal-meta').innerText = `${item.author} • ${item.year}`;
-    document.getElementById('modal-overview').innerText = item.overview;
+    document.getElementById('modal-img').src = item.posterUrl || 'https://via.placeholder.com/150x225?text=No+Cover';
+    document.getElementById('modal-meta').innerText = `${Array.isArray(item.author) ? item.author.join(', ') : item.author} • ${item.year || 'N/A'}`;
+    document.getElementById('modal-overview').innerText = item.overview || 'No description available.';
     document.getElementById('item-status').value = 'Plan to Read';
     document.getElementById('item-progress').value = 0;
     document.getElementById('item-rating').value = '';
@@ -99,7 +127,7 @@ UI.searchInput.addEventListener('input', (e) => {
         currentSearchResults = await searchBooks(query);
         UI.searchResults.innerHTML = currentSearchResults.map((item, idx) => `
             <div class="card" onclick="window.openAddModal(${idx})">
-                <img src="${item.posterUrl || 'https://via.placeholder.com/150x225?text=No+Image'}" alt="Poster">
+                <img src="${item.posterUrl || 'https://via.placeholder.com/150x225?text=No+Cover'}" alt="Poster">
                 <div class="card-overlay"><h4>${item.title}</h4></div>
             </div>
         `).join('');
@@ -125,6 +153,11 @@ document.getElementById('remove-item-btn').addEventListener('click', async () =>
     if(confirm("Remove this book?")) { await deleteItem(currentUser.uid, 'books', currentSelectedItem.id); UI.itemModal.classList.add('hidden'); loadShelf(); }
 });
 
+// UI Event Listeners
+document.getElementById('main-add-btn').addEventListener('click', () => {
+    UI.searchModal.classList.remove('hidden'); UI.searchInput.focus();
+    showToast("Use search to find and add an item!");
+});
 document.getElementById('search-trigger').addEventListener('click', () => { UI.searchModal.classList.remove('hidden'); UI.searchInput.focus(); });
 document.querySelectorAll('.close-modal').forEach(btn => btn.addEventListener('click', () => { UI.searchModal.classList.add('hidden'); UI.itemModal.classList.add('hidden'); }));
 document.getElementById('logout-btn').addEventListener('click', logout);
