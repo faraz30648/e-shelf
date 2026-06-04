@@ -1,0 +1,5 @@
+:root {
+    --accent: #7c3aed; /* Electric Violet */
+}
+.card { aspect-ratio: 2 / 3; }
+.hero-content h1 { text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
