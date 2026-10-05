@@ -3,123 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movies & Series | Entertainment Shelf</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Movies & Series | E-Shelf</title>
     <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/movies.css">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="theme-dark app-body">
-    <nav class="top-nav glass-panel">
-        <div class="nav-left">
-            <span class="brand-logo">E-SHELF</span>
-            <div class="nav-links">
-                <a href="movies.html" class="active">Movies</a>
-                <a href="books.html">Books</a>
-                <a href="anime.html">Anime</a>
-            </div>
+<body class="app-body">
+    <nav class="header glass">
+        <div class="header-left">
+            <span class="logo">E-SHELF</span>
         </div>
-        <div class="nav-right">
-            <button id="search-trigger" class="icon-btn" title="Search (Cmd+K)">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            </button>
-            <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
-            </button>
-            
-            <div class="user-menu">
-                <img id="user-avatar" src="" alt="User">
-                <div class="user-menu-tooltip glass-panel">
-                    <div class="tooltip-actions">
-                        <button id="logout-btn" class="btn btn-sm btn-primary">Sign Out</button>
-                        <button id="upload-data-btn" class="btn btn-sm btn-secondary">Upload CSV Data</button>
-                    </div>
-                    <div class="reset-section">
-                        <button id="reset-data-btn" class="btn btn-sm btn-danger">Reset All Data</button>
-                        <p class="reset-data-warning hidden" id="reset-warning">WARNING: This will permanently delete your entire shelf data. There is no undo.</p>
-                    </div>
+        <div class="stats-strip" id="stats-strip">
+            <!-- Injected by JS -->
+        </div>
+        <div class="header-right">
+            <button id="add-btn-main" class="btn btn-accent" aria-label="Add Title">+ Add</button>
+            <div class="user-menu" tabindex="0">
+                <img id="user-avatar" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="User">
+                <div class="dropdown glass">
+                    <div id="user-name" class="dropdown-header">User</div>
+                    <button id="logout-btn" class="btn-text">Sign out</button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <main>
-        <header id="hero-section" class="hero"></header>
-        
-        <div class="controls-bar">
-            <div class="mood-filters" id="mood-filters">
-                <span class="chip active" data-mood="all">All</span>
-                <span class="chip" data-mood="Action">Action-Packed</span>
-                <span class="chip" data-mood="Crime">Dark & Gritty</span>
-                <span class="chip" data-mood="Comedy">Feel-Good</span>
-                <span class="chip" data-mood="Sci-Fi">Mind-Bending</span>
-                <span class="chip" data-mood="Romance">Romantic</span>
-                <span class="chip" data-mood="Thriller">Thriller</span>
-            </div>
-            <div class="sort-controls">
-                <input type="text" id="shelf-search" placeholder="Filter shelf...">
-                <select id="shelf-sort">
-                    <option value="dateAdded">Date Added</option>
-                    <option value="title">Title A-Z</option>
-                    <option value="userRating">Your Rating</option>
-                </select>
-                <button id="main-add-btn" class="btn btn-primary btn-sm add-item-btn">+ Add Movie/Show</button>
+    <main class="container">
+        <div class="controls">
+            <input type="text" id="library-search" class="input" placeholder="Search your library..." aria-label="Search library">
+            <div class="filters">
+                <select id="filter-type" class="input select"><option value="all">All Types</option><option value="movie">Movies</option><option value="tv">Series</option></select>
+                <select id="filter-status" class="input select"><option value="all">All Status</option><option value="Watched">Watched</option><option value="Watching">Watching</option><option value="Plan to watch">Plan to watch</option><option value="Dropped">Dropped</option></select>
+                <select id="sort-by" class="input select"><option value="createdAt-desc">Recently Added</option><option value="dateWatched-desc">Date Watched</option><option value="rating-desc">Highest Rated</option><option value="title-asc">Title A-Z</option><option value="year-desc">Release Year</option></select>
             </div>
         </div>
 
-        <section id="stats-panel" class="stats-panel glass-panel"></section>
-
-        <div id="carousels-container" class="carousels">
-            </div>
+        <div id="library-grid" class="poster-grid">
+            <div class="spinner global-spinner"></div>
+        </div>
     </main>
 
-    <div id="search-modal" class="modal-backdrop hidden">
-        <div class="modal search-modal glass-panel">
-            <input type="text" id="global-search-input" placeholder="Search movies & series...">
-            <div id="search-results" class="results-grid"></div>
+    <!-- Detail Drawer -->
+    <div id="drawer-backdrop" class="backdrop" hidden></div>
+    <aside id="detail-drawer" class="drawer" aria-hidden="true">
+        <button id="drawer-close" class="btn-icon close-btn" aria-label="Close drawer">✕</button>
+        <div class="drawer-hero">
+            <div class="drawer-backdrop-img"></div>
+            <div class="drawer-hero-overlay"></div>
+            <img id="drawer-poster" class="drawer-poster" src="" alt="">
         </div>
-    </div>
+        <div class="drawer-content">
+            <h2 id="drawer-title" class="drawer-title"></h2>
+            <div id="drawer-meta" class="drawer-meta"></div>
+            <p id="drawer-overview" class="drawer-overview"></p>
+            
+            <form id="drawer-form" class="edit-form">
+                <div class="form-group row">
+                    <label>Status <select id="d-status" class="input select"><option>Watched</option><option>Watching</option><option>Plan to watch</option><option>Dropped</option></select></label>
+                    <label>Platform <select id="d-platform" class="input select"><option>Netflix</option><option>Prime Video</option><option>Hotstar</option><option>Other</option><option>None</option></select></label>
+                </div>
+                <div class="form-group series-progress" id="d-series-group" hidden>
+                    <label>Season <input type="number" id="d-season" class="input" min="1"></label>
+                    <label>Episode <input type="number" id="d-episode" class="input" min="1"></label>
+                    <label class="checkbox-label"><input type="checkbox" id="d-finished"> Finished Show</label>
+                </div>
+                <div class="form-group row">
+                    <label>Rating (0-10) <input type="number" id="d-rating" class="input" min="0" max="10" step="1"></label>
+                    <label>Reaction <select id="d-reaction" class="input select"><option value="">None</option><option value="loved">Loved it</option><option value="liked">Liked it</option><option value="meh">Meh</option><option value="nope">Nope</option></select></label>
+                </div>
+                <div class="form-group">
+                    <label>Date Watched <input type="date" id="d-date" class="input"></label>
+                </div>
+                <div class="form-group">
+                    <label>Notes <textarea id="d-note" class="input textarea"></textarea></label>
+                </div>
+                <div class="drawer-actions">
+                    <button type="submit" class="btn btn-accent">Save Changes</button>
+                    <button type="button" id="d-delete" class="btn btn-danger">Delete</button>
+                </div>
+            </form>
+            <div id="streaming-placeholder"></div>
+        </div>
+    </aside>
 
-    <div id="item-modal" class="modal-backdrop hidden">
-        <div class="modal item-modal glass-panel">
-            <div class="modal-header">
-                <h2 id="modal-title"></h2>
-                <button class="close-modal icon-btn">✕</button>
+    <!-- Add Flow Fullscreen Sheet -->
+    <div id="add-sheet" class="full-sheet" hidden aria-hidden="true">
+        <div class="sheet-header glass">
+            <div class="tabs">
+                <button class="tab active" data-target="tab-search">Search</button>
+                <button class="tab" data-target="tab-paste">Paste List</button>
+                <button class="tab" data-target="tab-csv">Import CSV</button>
+                <button class="tab" data-target="tab-swipe">Swipe</button>
             </div>
-            <div class="modal-body">
-                <div class="modal-poster"><img id="modal-img" src="" alt=""></div>
-                <div class="modal-info">
-                    <p id="modal-meta" class="meta"></p>
-                    <p id="modal-overview"></p>
-                    <div id="streaming-badges" class="badges"></div>
-                    <div id="trailer-container"></div>
-                    
-                    <form id="item-form" class="edit-form">
-                        <label>Status:
-                            <select id="item-status" required>
-                                <option value="Watching">Watching</option>
-                                <option value="Completed">Completed</option>
-                                <option value="Plan to Watch">Plan to Watch</option>
-                                <option value="Dropped">Dropped</option>
-                                <option value="On Hold">On Hold</option>
-                            </select>
-                        </label>
-                        <label>Rating (1-10): <input type="number" id="item-rating" min="1" max="10"></label>
-                        <label>Notes: <textarea id="item-notes"></textarea></label>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">Save to Shelf</button>
-                            <button type="button" id="remove-item-btn" class="btn btn-danger hidden">Remove</button>
+            <button id="close-sheet" class="btn-icon" aria-label="Close add sheet">✕</button>
+        </div>
+        
+        <div class="sheet-body">
+            <!-- Search Tab -->
+            <div id="tab-search" class="tab-content active">
+                <input type="text" id="add-search-input" class="input huge-input" placeholder="Search for a movie or show..." autocomplete="off">
+                <div id="add-search-results" class="poster-grid search-grid"></div>
+            </div>
+
+            <!-- Paste Tab -->
+            <div id="tab-paste" class="tab-content" hidden>
+                <div class="content-limit">
+                    <h3>Paste List</h3>
+                    <p class="subtext">Paste one title per line. We'll automatically match them.</p>
+                    <textarea id="paste-input" class="input textarea huge-textarea" placeholder="Inception&#10;Breaking Bad&#10;The Matrix"></textarea>
+                    <button id="paste-process-btn" class="btn btn-accent mt-2">Find Matches</button>
+                    <div id="paste-review-area" class="review-area" hidden>
+                        <div class="bulk-actions mb-2 row">
+                            <label>Default Status: <select id="paste-def-status" class="input select"><option>Plan to watch</option><option>Watched</option></select></label>
+                            <button id="paste-save-btn" class="btn btn-accent">Save Selected</button>
                         </div>
-                    </form>
+                        <div id="paste-review-list" class="review-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CSV Tab -->
+            <div id="tab-csv" class="tab-content" hidden>
+                <div class="content-limit">
+                    <h3>Import Viewing History</h3>
+                    <div class="help-box mb-2">
+                        <strong>Netflix:</strong> Account > Viewing activity > Download all.<br>
+                        <strong>Prime Video:</strong> Account > Request Your Data. <br>
+                        Requires columns: <code>Title</code>, and optionally <code>Date</code>.
+                    </div>
+                    <label class="file-drop-area">
+                        <span class="file-msg">Choose a CSV file or drag it here</span>
+                        <input type="file" id="csv-input" accept=".csv" class="hidden-input">
+                    </label>
+                    <div id="csv-progress" class="progress-bar mt-2" hidden><div class="progress-fill"></div></div>
+                    <div id="csv-review-area" class="review-area mt-2" hidden>
+                        <div class="bulk-actions mb-2 row">
+                            <span>Matches: <strong id="csv-match-count">0</strong></span>
+                            <button id="csv-save-btn" class="btn btn-accent">Import Checked Items</button>
+                        </div>
+                        <div id="csv-review-list" class="review-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Swipe Tab -->
+            <div id="tab-swipe" class="tab-content swipe-tab" hidden>
+                <div class="swipe-filters">
+                    <select id="swipe-type" class="input select"><option value="movie">Movies</option><option value="tv">Series</option></select>
+                    <select id="swipe-platform" class="input select"><option value="">Any Platform</option><option value="8">Netflix</option><option value="119">Prime Video</option><option value="122">Hotstar</option></select>
+                    <button id="swipe-load-btn" class="btn btn-accent">Load Deck</button>
+                </div>
+                <div class="swipe-deck-container" id="swipe-deck">
+                    <!-- Cards injected here -->
+                </div>
+                <div class="swipe-controls">
+                    <button id="swipe-btn-left" class="btn-circle btn-danger" aria-label="Skip">✕</button>
+                    <button id="swipe-btn-up" class="btn-circle btn-star" aria-label="Loved it">★</button>
+                    <button id="swipe-btn-right" class="btn-circle btn-success" aria-label="Seen">✔</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="toast-container"></div>
+    <!-- Quick Add Panel (Overlay inside add flow) -->
+    <div id="quick-add-panel" class="quick-add-panel glass" hidden>
+        <div class="quick-add-inner">
+            <button id="qa-close" class="btn-icon close-btn">✕</button>
+            <div class="row align-center mb-2">
+                <img id="qa-poster" src="" class="qa-poster" alt="">
+                <div>
+                    <h3 id="qa-title"></h3>
+                    <div id="qa-meta" class="meta-text"></div>
+                </div>
+            </div>
+            <div class="reaction-buttons row mb-2">
+                <button class="btn btn-reaction" data-val="nope" data-rating="3">👎 Nope</button>
+                <button class="btn btn-reaction" data-val="meh" data-rating="5">😐 Meh</button>
+                <button class="btn btn-reaction" data-val="liked" data-rating="7">👍 Liked</button>
+                <button class="btn btn-reaction" data-val="loved" data-rating="9">❤️ Loved</button>
+            </div>
+            <div class="row mb-2">
+                <select id="qa-status" class="input select flex-1"><option>Watched</option><option>Plan to watch</option><option>Watching</option></select>
+                <select id="qa-platform" class="input select flex-1"><option>Netflix</option><option>Prime Video</option><option>Hotstar</option><option>Other</option></select>
+            </div>
+            <div class="row mb-2" id="qa-series-group" hidden>
+                <button id="qa-btn-finished" class="btn btn-outline flex-1">Finished Show</button>
+                <input type="number" id="qa-season" class="input" placeholder="S" min="1" style="width:60px">
+                <input type="number" id="qa-episode" class="input" placeholder="E" min="1" style="width:60px">
+            </div>
+            <button id="qa-save" class="btn btn-accent full-width">Save to Library</button>
+        </div>
+    </div>
+
     <script type="module" src="js/movies-app.js"></script>
 </body>
 </html>
