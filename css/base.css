@@ -1,4 +1,7 @@
 /* base.css - Letterboxd-style minimal dark theme */
+[hidden] {
+    display: none !important;
+}
 :root {
     --bg-base: #14181c;
     --bg-panel: #1c2127;
